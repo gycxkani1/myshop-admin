@@ -28,11 +28,11 @@ from django.utils.translation import gettext_lazy as _
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('basic/',include('apps.basic.urls')),
-    # path('goods/',include('apps.goods.urls')),
-    # path('users/',include('apps.users.urls')),
-    # path('order/',include('apps.order.urls')),
-]# + staticfiles_urlpatterns()+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('basic/',include('apps.basic.urls')),
+    path('goods/',include('apps.goods.urls')),
+    path('users/',include('apps.users.urls')),
+    path('order/',include('apps.order.urls')),
+] + staticfiles_urlpatterns()+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # if settings.DEBUG:
 #     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
@@ -47,6 +47,6 @@ if not settings.DEBUG:
 re_path('static/(?P<path>.*)', serve, {'document_root': settings.STATIC_ROOT}),]
 
 # 添加i18n URL配置
-# urlpatterns += [
-#     path(_('^i18n/'), include('django.conf.urls.i18n')),
-# ]
+urlpatterns += [
+    path(_('^i18n/'), include('django.conf.urls.i18n')),
+]

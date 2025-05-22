@@ -1,4 +1,6 @@
-from django.urls import path,include,re_path
+from django.urls import path,include
 from apps.basic import views
 
-urlpatterns = []
+urlpatterns = [
+    path('index/',views.index),
+]
