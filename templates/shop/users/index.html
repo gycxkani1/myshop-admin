@@ -61,7 +61,7 @@
 
                 <div class="col-sm-12 select-table table-striped">
                     <div class="btn-group-sm" id="toolbar" role="group">
-                        <a class="btn btn-success" href="/member/add/">
+                        <a class="btn btn-success" href="/users/add/">
                             <i class="fa fa-plus"></i> 新增
                         </a>
                     </div>
@@ -100,7 +100,7 @@
                             <td>{{ per.add_time }}</td>
                             <td width="5%"><img src="/media/{{ per.user_img }}" width="100px" height="100px" /></td>
                             <td width="20%">
-                                <a class="btn btn-primary single" href="#">
+                                <a class="btn btn-primary single" href="/users/edit/<id>/">
                                     <i class="fa fa-edit"></i> 修改
                                 </a>
                                 <a class="btn btn-danger" href="javascript:void(0)" onclick="showDeleteModal(this)">删除</a>
@@ -120,7 +120,7 @@
 
     <nav aria-label="Contacts Page Navigation">
         <ul class="pagination justify-content-center m-2">
-            {% if users.has_previous %}
+            {% if users.has_previous %} <!--如果有上一页-->
             <li class="page-item">
                 <a class="page-link" href="/users/index/?page={{ users.previous_page_number }}&level={{level}}&username={{username}}&status={{status}}">
                     <span aria-hidden="true">&laquo;</span>
@@ -128,12 +128,12 @@
             </li>
             {% endif %}
 
-            {% for pg in users.paginator.page_range %}
-            {% if users.number == pg %}
+            {% for pg in users.paginator.page_range %} <!-- 遍历分页对象中的页码范围(从1开始) -->
+            {% if users.number == pg %} <!--如果当前页码等于遍历到的页码pg，则显示当前页码为激活状态（即高亮显示）。-->
             <li class="page-item active">
                 <a class="page-link" href="">{{ pg }}</a>
             </li>
-            {% else %}
+            {% else %}<!--否则，生成一个普通的页码链接。-->
             <li class="page-item">
                 <a class="page-link" href="/users/index/?page={{pg}}&level={{level}}&username={{username}}&status={{status}}">{{ pg }}</a>
             </li>
@@ -141,7 +141,7 @@
             {% endfor %}
 
 
-            {% if users.has_next %}
+            {% if users.has_next %} <!--如果有下一页-->
             <li class="page-item">
                 <a class="page-link" href="/users/index/?page={{ users.next_page_number }}&level={{level}}&username={{username}}&status={{status}}">
                     <span aria-hidden="true">&raquo;</span>

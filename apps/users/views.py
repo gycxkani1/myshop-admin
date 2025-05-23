@@ -1,7 +1,9 @@
+import json
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import login,logout,authenticate
+from apps.users import models
 from apps.users.models import MyUser
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import F
@@ -14,19 +16,19 @@ def edit(request,id):
     return render(request,'shop/users/edit.html')
 
 def delete(request,id):
-    obj=MyUser.objects.get(id=id)
-    obj.delete()
-    json_dict={}
-    json_dict["code"]=200
-    json_dict["msg"]="删除数据成功"
-    return JsonResponse(json_dict)
+    obj=MyUser.objects.get(id=id) # 获取要删除的用户对象
+    obj.delete() # 调用对象的delete方法删除用户
+    json_dict={} # 创建一个空字典，用于存储返回的JSON数据
+    json_dict["code"]=200 # 设置返回的JSON数据的状态码为200，表示成功
+    json_dict["msg"]="删除数据成功" # 设置返回的JSON数据的消息为"删除数据成功"
+    return JsonResponse(json_dict) # 返回JSON格式的响应
 
 def index(request):
     if request.method=="GET":
         level=request.GET.get("level")
         truename=request.GET.get("truename",'')
         status=request.GET.get("status")
-
+        # 创建一个空字典，用于存储搜索条件
         search_dict=dict()
         if level:
             search_dict["level"]=level
@@ -35,35 +37,36 @@ def index(request):
         if status:
             search_dict["status"]=status
         
-        datas=MyUser.objects.filter(**search_dict).order_by("-id")
+        datas=MyUser.objects.filter(**search_dict).order_by("-id") # 字典传值查询，按id倒序排列
 
-        page_size=2 #每页显示的行数
+        # 对查询结果做分页处理
+        page_size=2 # 每页显示的行数
         try:
-            if not request.GET.get("page"):
-                curr_page=1
-            curr_page=int(request.GET.get("page"))
+            if not request.GET.get("page"): # 没有传入page参数
+                curr_page=1 # 默认第一页
+            curr_page=int(request.GET.get("page")) # 获取当前页码, int()函数将字符串转换为整数
         except:
-            curr_page=1
+            curr_page=1 # 如果获取不到页码，默认为第一页
 
-        paginator=Paginator(datas,page_size)
+        paginator=Paginator(datas,page_size) # 创建分页器对象，每页显示2条数据
         try:
-            users=paginator.page(curr_page)
-        except PageNotAnInteger:
+            users=paginator.page(curr_page) # 获取当前页的数据
+        except PageNotAnInteger: # 如果页码不是整数，默认为第一页
             users=paginator.page(1)
-        except EmptyPage:
+        except EmptyPage: # 如果页码超出范围(空白页)，默认为第一页
             users=paginator.page(1)
-        context={
+        context={ # 创建上下文，存储搜索条件和分页数据
             'level':level,
             'truename':truename,
             'status':status,
             'users':users,
         }
         print(context)
-    return render(request,'shop/users/index.html',context=context)
+    return render(request,'shop/users/index.html',context=context) # 返回渲染后的模板
 #改进分页
 def index_page(request):
     if request.method=="GET":
-        page_size=100 #每页3条数据
+        page_size=3 #每页3条数据
         #page_size=int(request.GET["page_size"])
         try:
             if not request.GET["page"]:
@@ -74,9 +77,10 @@ def index_page(request):
         #获取总数count
         total=MyUser.objects.count()
         #计算总页数
-        total_page,remainder=divmod(total,page_size)
+        total_page,remainder=divmod(total,page_size) # 商total_page向下到整,余数remainder
         if remainder:
-            total_page+=1
+            total_page+=1 # 如果余数不为0，总页数加1
+
 
         #通过切片获取当前页和下一页的数据
         users=MyUser.objects.order_by("-id")[(curr_page-1)*page_size:curr_page*page_size]
@@ -89,7 +93,7 @@ def get_memberinfo(request):
         #获取总数count
         total=models.MyUser.objects.count()
         #通过切片获取当前页和下一页的数据
-        users=models.MyUser.objects.order_by("-id")[(page_num-1)*page_size:page_num*page_size]
+        users=models.MyUser.objects.order_by("-id")[(curr_page-1)*page_size:curr_page*page_size]
         rows=[]
         datas={"total":total,"rows":rows}
         for user in users:
